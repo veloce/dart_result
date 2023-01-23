@@ -22,7 +22,7 @@ abstract class Result<S, F extends Object> {
 
   /// Try to await `run`. If no error occurs, then return [Success].
   /// Otherwise return [Failure] containing the result of `onError`.
-  static FutureOr<Result<T, E>> tryCatchAsync<T, E extends Object>(
+  static Future<Result<T, E>> tryCatchAsync<T, E extends Object>(
       FutureOr<T> Function() run,
       E Function(Object o, StackTrace s) onError) async {
     try {
