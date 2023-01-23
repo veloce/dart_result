@@ -86,7 +86,7 @@ abstract class Result<S, F extends Object> {
   ///
   /// Use this method to avoid a nested result when your transformation
   /// produces another [Result] type.
-  Result<U, F> flatMap<U>(Result<U, F> Function(S) f);
+  Result<U, F> flatMap<U>(covariant Result<U, F> Function(S) f);
 }
 
 /// A success, storing a [Success] value.
@@ -141,7 +141,7 @@ class Success<S, F extends Object> extends Result<S, F> {
   Result<S, E> mapFailure<E extends Object>(E Function(F) f) => Success(value);
 
   @override
-  Result<U, F> flatMap<U>(Result<U, F> Function(S) f) => f(value);
+  Result<U, F> flatMap<U>(covariant Result<U, F> Function(S) f) => f(value);
 
   @override
   bool operator ==(Object o) {
@@ -208,7 +208,8 @@ class Failure<S, F extends Object> extends Result<S, F> {
       Failure(f(error));
 
   @override
-  Result<U, F> flatMap<U>(Result<U, F> Function(S) f) => Failure(error);
+  Result<U, F> flatMap<U>(covariant Result<U, F> Function(S) f) =>
+      Failure(error);
 
   @override
   bool operator ==(Object o) {
