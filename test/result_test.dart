@@ -28,17 +28,17 @@ void main() {
 
       final resultFailed = getUser(value: false);
 
-      expect(resultFailed.getOrThrow, throwsException);
+      expect(resultFailed.getOrThrow, throwsA(const MockError(404)));
     });
 
     test('getFailureOrThrow()', () {
-      final result = getUser(value: false);
+      final resultFailed = getUser(value: false);
 
-      expect(result.getFailureOrThrow(), const MockError(404));
+      expect(resultFailed.getFailureOrThrow(), const MockError(404));
 
-      final result2 = getUser(value: true);
+      final result = getUser(value: true);
 
-      expect(result2.getFailureOrThrow, throwsException);
+      expect(result.getFailureOrThrow, throwsA(isA<Exception>()));
     });
 
     test('fold with success', () {

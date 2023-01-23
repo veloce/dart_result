@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 /// A value that represents either a success or a failure.
-abstract class Result<S, F> {
+abstract class Result<S, F extends Object> {
   const Result();
 
   const factory Result.success(S value) = Success;
@@ -39,7 +39,7 @@ abstract class Result<S, F> {
 
   /// Returns the value of [Success]
   ///
-  /// Will throw an [Exception] if this is not a [Success].
+  /// Will throw the [Failure] if this is not a [Success].
   S getOrThrow();
 
   /// Returns the value of [Failure]
@@ -64,7 +64,7 @@ abstract class Result<S, F> {
   ///
   /// This function can be used to pass through a successful result
   /// while applying transformation to [Failure].
-  Result<S, E> mapFailure<E>(E Function(F) f);
+  Result<S, E> mapFailure<E extends Object>(E Function(F) f);
 
   /// Maps a [Result<S, F>] to [Result<U, F>] by applying a function
   /// to a contained [Success] value and unwrapping the produced result,
@@ -77,7 +77,7 @@ abstract class Result<S, F> {
 
 /// A success, storing a [Success] value.
 @immutable
-class Success<S, F> extends Result<S, F> {
+class Success<S, F extends Object> extends Result<S, F> {
   final S value;
 
   const Success(this.value);
@@ -124,7 +124,7 @@ class Success<S, F> extends Result<S, F> {
   Result<U, F> map<U>(U Function(S) f) => Success(f(value));
 
   @override
-  Result<S, E> mapFailure<E>(E Function(F) f) => Success(value);
+  Result<S, E> mapFailure<E extends Object>(E Function(F) f) => Success(value);
 
   @override
   Result<U, F> flatMap<U>(Result<U, F> Function(S) f) => f(value);
@@ -145,7 +145,7 @@ class Success<S, F> extends Result<S, F> {
 
 /// A failure, storing a [Failure] value.
 @immutable
-class Failure<S, F> extends Result<S, F> {
+class Failure<S, F extends Object> extends Result<S, F> {
   final F error;
 
   const Failure(this.error);
@@ -170,9 +170,7 @@ class Failure<S, F> extends Result<S, F> {
 
   @override
   S getOrThrow() {
-    throw Exception(
-      'Tried to obtain the value from a failure.',
-    );
+    throw error;
   }
 
   @override
@@ -192,7 +190,8 @@ class Failure<S, F> extends Result<S, F> {
   Result<U, F> map<U>(U Function(S) f) => Failure(error);
 
   @override
-  Result<S, E> mapFailure<E>(E Function(F) f) => Failure(f(error));
+  Result<S, E> mapFailure<E extends Object>(E Function(F) f) =>
+      Failure(f(error));
 
   @override
   Result<U, F> flatMap<U>(Result<U, F> Function(S) f) => Failure(error);
