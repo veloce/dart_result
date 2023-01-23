@@ -25,27 +25,20 @@ void main() {
       final result = getUser(value: true);
 
       expect(result.getOrThrow(), 'John Doe');
+
+      final resultFailed = getUser(value: false);
+
+      expect(resultFailed.getOrThrow, throwsException);
     });
 
     test('getFailureOrThrow()', () {
       final result = getUser(value: false);
 
       expect(result.getFailureOrThrow(), const MockError(404));
-    });
 
-    test('Throw Exception when getting value without checking if isSuccess',
-        () {
-      final result = getUser(value: false);
+      final result2 = getUser(value: true);
 
-      expect(result.getOrThrow, throwsException);
-    });
-
-    test(
-        'Throw Exception when accessing failure value without checking if isFailure',
-        () {
-      final result = getUser(value: true);
-
-      expect(result.getFailureOrThrow, throwsException);
+      expect(result2.getFailureOrThrow, throwsException);
     });
 
     test('fold with success', () {
@@ -77,14 +70,14 @@ void main() {
       final result = getUser(value: false);
       final error = result.map<String>((i) => i.toUpperCase()).failure;
 
-      expect(error, const Failure(MockError(404)));
+      expect(error, const Failure<String, MockError>(MockError(404)));
     });
 
     test('Apply mapFailure transformation to failure type', () {
       final error =
           getUser(value: false).mapFailure<int>((i) => i.code).failure;
 
-      expect(error, const Failure(404));
+      expect(error, const Failure<String, int>(404));
     });
 
     test('Returns successful result without applying mapFailure transformation',
@@ -102,7 +95,7 @@ void main() {
 
       expect(
         nextIntegerUnboxedResults,
-        const TypeMatcher<Success<int>>(),
+        const TypeMatcher<Success<int, MockError>>(),
       );
     });
 
@@ -114,16 +107,63 @@ void main() {
 
       expect(
         nextIntegerUnboxedResults,
-        const TypeMatcher<Failure<MockError>>(),
+        const TypeMatcher<Failure<int, MockError>>(),
       );
+    });
+  });
+
+  group('Success', () {
+    test('Should have a value 0', () {
+      const success = Success<int, Never>(0);
+      expect(success.value, 0);
+    });
+
+    test('Two identical Successes should be equal', () {
+      const success1 = Success<int, Never>(0);
+      const success2 = Success<int, Never>(0);
+
+      expect(success1, success2);
+    });
+
+    test('Two identical Successes should have the same hashCode', () {
+      const success1 = Success<int, Never>(0);
+      const success2 = Success<int, Never>(0);
+
+      expect(success1.hashCode, success2.hashCode);
+    });
+
+    test('Can print to string', () {
+      const success = Success<int, Never>(0);
+      expect(success.toString(), 'Success: 0');
+    });
+  });
+
+  group('Failure', () {
+    test('Should return _TestError', () {
+      const failure = Failure<Never, MockError>(MockError(1));
+      expect(failure.error.code, 1);
+    });
+
+    test('Two identical Failures should be equal', () {
+      const failure1 = Failure<Never, MockError>(MockError(1));
+      const failure2 = Failure<Never, MockError>(MockError(1));
+
+      expect(failure1, failure2);
+    });
+
+    test('Two identical Failures should have the same hashCode', () {
+      const failure1 = Failure<Never, MockError>(MockError(1));
+      const failure2 = Failure<Never, MockError>(MockError(1));
+
+      expect(failure1.hashCode, failure2.hashCode);
+    });
+
+    test('Can print to string', () {
+      const failure = Failure<Never, MockError>(MockError(1));
+      expect(failure.toString(), 'Failure: MockError(code: 1)');
     });
   });
 }
 
-Result<String, MockError> getUser({required bool value}) {
-  if (value) {
-    return const Success('John Doe');
-  } else {
-    return const Failure(MockError(404));
-  }
-}
+Result<String, MockError> getUser({required bool value}) =>
+    value ? const Success('John Doe') : const Failure(MockError(404));
