@@ -65,16 +65,13 @@ abstract class Result<S, F extends Object> {
   F getFailureOrThrow();
 
   /// Applies `onSuccess` if this is a [Failure] or `onFailure` if this is a [Success].
-  U fold<U>(U Function(S success) onSuccess, U Function(F failure) onFailure);
+  U fold<U>(U Function(S value) onSuccess, U Function(F failure) onFailure);
 
   /// Applies `onSuccess` if this is a [Failure] or `onFailure` if this is a [Success].
-  ///
-  /// Alias of `fold`.
-  U match<U>({
-    required U Function(S success) onSuccess,
-    required U Function(F failure) onFailure,
-  }) =>
-      fold(onSuccess, onFailure);
+  void match({
+    void Function(S value)? onSuccess,
+    void Function(F failure)? onFailure,
+  });
 
   /// Maps a [Result<S, F>] to [Result<U, F>] by applying a function
   /// to a contained [Success] value, leaving an [Failure] value untouched.
@@ -141,6 +138,16 @@ class Success<S, F extends Object> extends Result<S, F> {
   }
 
   @override
+  void match({
+    void Function(S value)? onSuccess,
+    void Function(F error)? onFailure,
+  }) {
+    if (onSuccess != null) {
+      onSuccess(value);
+    }
+  }
+
+  @override
   Result<U, F> map<U>(U Function(S) f) => Success(f(value));
 
   @override
@@ -201,6 +208,16 @@ class Failure<S, F extends Object> extends Result<S, F> {
   @override
   U fold<U>(U Function(S value) onSuccess, U Function(F error) onFailure) {
     return onFailure(error);
+  }
+
+  @override
+  void match({
+    void Function(S value)? onSuccess,
+    void Function(F error)? onFailure,
+  }) {
+    if (onFailure != null) {
+      onFailure(error);
+    }
   }
 
   @override
