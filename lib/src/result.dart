@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:meta/meta.dart';
 
+/// `AsyncResult<S, E>` represents an asynchronous computation.
+typedef AsyncResult<S, F extends Object> = Future<Result<S, F>>;
+
 /// A value that represents either a success or a failure.
 abstract class Result<S, F extends Object> {
   const Result();
@@ -22,7 +25,7 @@ abstract class Result<S, F extends Object> {
 
   /// Try to await `run`. If no error occurs, then return [Success].
   /// Otherwise return [Failure] containing the result of `onError`.
-  static Future<Result<T, E>> tryCatchAsync<T, E extends Object>(
+  static AsyncResult<T, E> tryCatchAsync<T, E extends Object>(
       FutureOr<T> Function() run,
       E Function(Object o, StackTrace s) onError) async {
     try {

@@ -3,9 +3,6 @@ import 'dart:async';
 import 'result.dart';
 
 /// `AsyncResult<S, E>` represents an asynchronous computation.
-typedef AsyncResult<S, F extends Object> = Future<Result<S, F>>;
-
-/// `AsyncResult<S, E>` represents an asynchronous computation.
 extension AsyncResultExtension<S, F extends Object> on AsyncResult<S, F> {
   /// Returns a new [Result], mapping any [Success] value
   /// using the given transformation and unwrapping the produced [Result].
@@ -46,8 +43,15 @@ extension AsyncResultExtension<S, F extends Object> on AsyncResult<S, F> {
   /// Returns true if the current result is a [Success].
   Future<bool> get isSuccess => then((result) => result.isSuccess);
 
-  /// Returns the success value as a throwing expression.
+  /// Returns the future success value.
+  ///
+  /// Will throw the [Failure] if this is not a [Success].
   Future<S> getOrThrow() => then((result) => result.getOrThrow());
+
+  /// Returns the future value of [Failure].
+  ///
+  /// Will throw an [Exception] if this is not a [Failure].
+  Future<F> getFailureOrThrow() => then((result) => result.getFailureOrThrow());
 
   /// Returns the encapsulated value if this instance represents [Success]
   /// or the result of `onFailure` function for
