@@ -29,9 +29,18 @@ extension AsyncResultExtension<S, F extends Object> on AsyncResult<S, F> {
   /// for the encapsulated value if it is [Error].
   Future<W> fold<W>(
     W Function(S value) onSuccess,
-    W Function(F error) onError,
+    W Function(F error) onFailure,
   ) {
-    return then<W>((result) => result.fold(onSuccess, onError));
+    return then<W>((result) => result.fold(onSuccess, onFailure));
+  }
+
+  /// Execute `onSuccess` in case of [Success] or `onFailure` in case of [Failure].
+  Future<void> match({
+    void Function(S value)? onSuccess,
+    void Function(F failure)? onFailure,
+  }) {
+    return then(
+        (result) => result.match(onSuccess: onSuccess, onFailure: onFailure));
   }
 
   /// Returns the future value of [S] if any.

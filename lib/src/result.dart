@@ -64,10 +64,10 @@ abstract class Result<S, F extends Object> {
   /// Will throw an [Exception] if this is not a [Failure].
   F getFailureOrThrow();
 
-  /// Applies `onSuccess` if this is a [Failure] or `onFailure` if this is a [Success].
+  /// Applies `onSuccess` if this is a [Success] or `onFailure` if this is a [Failure].
   U fold<U>(U Function(S value) onSuccess, U Function(F failure) onFailure);
 
-  /// Applies `onSuccess` if this is a [Failure] or `onFailure` if this is a [Success].
+  /// Execute `onSuccess` in case of [Success] or `onFailure` in case of [Failure].
   void match({
     void Function(S value)? onSuccess,
     void Function(F failure)? onFailure,
