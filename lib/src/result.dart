@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:meta/meta.dart';
 
 /// A value that represents either a success or a failure.
@@ -10,12 +11,25 @@ abstract class Result<S, F extends Object> {
 
   /// Try to execute `run`. If no error occurs, then return [Success].
   /// Otherwise return [Failure] containing the result of `onError`.
-  factory Result.tryCatch(
-      S Function() run, F Function(Object o, StackTrace s) onError) {
+  static Result<T, E> tryCatch<T, E extends Object>(
+      T Function() run, E Function(Object o, StackTrace s) onError) {
     try {
       return Success(run());
     } catch (e, s) {
       return Failure(onError(e, s));
+    }
+  }
+
+  /// Try to await `run`. If no error occurs, then return [Success].
+  /// Otherwise return [Failure] containing the result of `onError`.
+  static FutureOr<Result<T, E>> tryCatchAsync<T, E extends Object>(
+      FutureOr<T> Function() run,
+      E Function(Object o, StackTrace s) onError) async {
+    try {
+      final value = await run();
+      return Result.success(value);
+    } catch (e, s) {
+      return Result.failure(onError(e, s));
     }
   }
 

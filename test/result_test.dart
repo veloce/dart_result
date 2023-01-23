@@ -6,15 +6,33 @@ import 'utils/mock_error.dart';
 void main() {
   group('Result:', () {
     test('tryCatch constructor with success', () {
-      final result = Result<String, String>.tryCatch(
-          () => 'John Doe', (error, _) => error.toString());
+      final result =
+          Result.tryCatch(() => 'John Doe', (error, _) => error.toString());
 
       expect(result.getOrNull, 'John Doe');
     });
 
     test('tryCatch constructor with failure', () {
-      final result = Result<String, String>.tryCatch(
+      final result = Result.tryCatch(
         () => throw Exception('error'),
+        (error, _) => error.toString(),
+      );
+
+      expect(result.failure?.error, 'Exception: error');
+    });
+
+    test('tryCatchAsync success', () async {
+      final result = await Result.tryCatchAsync(
+          () async => Future<void>.delayed(const Duration(milliseconds: 100))
+              .then((_) => 'John Doe'),
+          (error, _) => error.toString());
+
+      expect(result.getOrNull, 'John Doe');
+    });
+
+    test('tryCatchAsync failure', () async {
+      final result = await Result.tryCatchAsync(
+        () async => throw Exception('error'),
         (error, _) => error.toString(),
       );
 
