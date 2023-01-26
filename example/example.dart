@@ -3,15 +3,15 @@ import 'package:dart_result/dart_result.dart';
 void main() async {
   final okResult = await fetchFromServer(withError: false);
   final username = okResult.fold(
-    onSuccess: (user) => user.username,
-    onFailure: (failure) => 'ERROR: $failure',
+    (user) => user.username,
+    (failure) => 'ERROR: $failure',
   );
   print(username); // john
 
   final errorResult = await fetchFromServer(withError: true);
   final usernameNotOk = errorResult.fold(
-    onSuccess: (user) => user.username,
-    onFailure: (failure) => 'ERROR: $failure',
+    (user) => user.username,
+    (failure) => 'ERROR: $failure',
   );
   print(usernameNotOk); // ERROR: Some Failure happened
 
