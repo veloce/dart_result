@@ -71,6 +71,46 @@ void main() {
       expect(result.fold((success) => success, (_) => 'default'), 'default');
     });
 
+    test('match with failed', () {
+      final failedResult = getUser(value: false);
+
+      String? onSuccessResult;
+      Object? onFailureResult;
+      failedResult.match(
+        onSuccess: (value) => onSuccessResult = value,
+        onFailure: (error) => onFailureResult = error,
+      );
+      expect(onSuccessResult, isNull);
+      expect(onFailureResult, const MockError(404));
+    });
+
+    test('match with success', () {
+      final successResult = getUser(value: true);
+
+      String? onSuccessResult;
+      Object? onFailureResult;
+      successResult.match(
+        onSuccess: (value) => onSuccessResult = value,
+        onFailure: (error) => onFailureResult = error,
+      );
+      expect(onSuccessResult, 'John Doe');
+      expect(onFailureResult, isNull);
+    });
+
+    test('forEach with failure', () {
+      final result = getUser(value: false);
+      String? test;
+      result.forEach((value) => test = value);
+      expect(test, isNull);
+    });
+
+    test('forEach with success', () {
+      final result = getUser(value: true);
+      String? test;
+      result.forEach((value) => test = value);
+      expect(test, 'John Doe');
+    });
+
     test('Apply map transformation to successful operation results', () {
       final result = getUser(value: true);
       final user = result.map<String>((i) => i.toUpperCase()).getOrNull;

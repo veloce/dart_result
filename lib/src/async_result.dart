@@ -12,6 +12,13 @@ extension AsyncResultExtension<S, F extends Object> on AsyncResult<S, F> {
     return then((result) => result.fold(fn, Failure.new));
   }
 
+  /// Apply a function to a contained [Success] value
+  ///
+  /// Equivalent to `match(onSuccess: (value) { // do sth with value })`
+  Future<void> forEach(void Function(S) f) {
+    return then((result) => result.forEach(f));
+  }
+
   /// Returns a new [AsyncResult], mapping any [Success] value
   /// using the given transformation.
   AsyncResult<W, F> map<W extends Object>(W Function(S success) fn) {

@@ -79,6 +79,11 @@ abstract class Result<S, F extends Object> {
   /// This function can be used to compose the results of two functions.
   Result<U, F> map<U>(U Function(S) f);
 
+  /// Apply a function to a contained [Success] value
+  ///
+  /// Equivalent to `match(onSuccess: (value) { // do sth with value })`
+  void forEach(void Function(S) f);
+
   /// Maps a [Result<S, F>] to [Result<S, E>] by applying a function
   /// to a contained [Failure] value, leaving an [Success] value untouched.
   ///
@@ -149,6 +154,9 @@ class Success<S, F extends Object> extends Result<S, F> {
 
   @override
   Result<U, F> map<U>(U Function(S) f) => Success(f(value));
+
+  @override
+  void forEach(void Function(S) f) => f(value);
 
   @override
   Result<S, E> mapFailure<E extends Object>(E Function(F) f) => Success(value);
@@ -222,6 +230,9 @@ class Failure<S, F extends Object> extends Result<S, F> {
 
   @override
   Result<U, F> map<U>(U Function(S) f) => Failure(error);
+
+  @override
+  void forEach(void Function(S) f) {}
 
   @override
   Result<S, E> mapFailure<E extends Object>(E Function(F) f) =>
